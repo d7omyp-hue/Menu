@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
 <style>
@@ -36,6 +37,7 @@ img {
 <img src="page9.jpg">
 
 <script>
+// منع التكبير
 document.addEventListener('gesturestart', e => e.preventDefault());
 document.addEventListener('gesturechange', e => e.preventDefault());
 document.addEventListener('gestureend', e => e.preventDefault());
@@ -54,6 +56,75 @@ document.addEventListener('touchend', function(e) {
     }
     lastTouchEnd = now;
 }, false);
+
+// ======================
+// النزول التلقائي
+// ======================
+
+let autoScroll = true;
+let scrollSpeed = 0.6;      // السرعة
+let idleTime = 10000;       // 10 ثواني
+
+let lastInteraction = Date.now();
+
+function userInteracted() {
+    lastInteraction = Date.now();
+    autoScroll = false;
+}
+
+[
+"touchstart",
+"touchmove",
+"mousedown",
+"wheel"
+].forEach(event => {
+    document.addEventListener(event, userInteracted, { passive: true });
+});
+
+setInterval(() => {
+
+    // بعد 10 ثواني بدون لمس
+    if (!autoScroll && Date.now() - lastInteraction >= idleTime) {
+
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
+
+        setTimeout(() => {
+            autoScroll = true;
+        }, 2000);
+
+    }
+
+    if (autoScroll) {
+
+        window.scrollBy(0, scrollSpeed);
+
+        // وصل للنهاية
+        if ((window.innerHeight + window.scrollY) >= document.body.scrollHeight - 5) {
+
+            autoScroll = false;
+
+            setTimeout(() => {
+
+                window.scrollTo({
+                    top: 0,
+                    behavior: "smooth"
+                });
+
+                setTimeout(() => {
+                    autoScroll = true;
+                }, 2000);
+
+            }, 3000);
+
+        }
+
+    }
+
+},20);
+
 </script>
 
 </body>
